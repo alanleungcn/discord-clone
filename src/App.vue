@@ -1,32 +1,39 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
-  </div>
+	<div class="app">
+		<TheNav />
+		<router-view />
+	</div>
 </template>
 
+<script>
+import TheNav from '@/components/TheNav.vue';
+
+export default {
+	components: {
+		TheNav
+	}
+};
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+html,
+body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	font-family: 'Roboto', sans-serif;
 }
 
-#nav {
-  padding: 30px;
+.app {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	color: #dcddde;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+input {
+	color: #dcddde;
 }
 </style>
