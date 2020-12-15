@@ -1,7 +1,31 @@
 <template>
 	<div class="lobby-wrapper">
 		<div class="control-wrapper">
-			<div class="top-wrapper"></div>
+			<div class="top-wrapper">
+				<span>Lobby</span>
+			</div>
+			<div class="skeleton">
+				<svg fill="#36393f" width="184" height="428">
+					<rect
+						v-for="(n, i) in 10"
+						:key="'rect' + i"
+						x="40"
+						:y="6 + 44 * i"
+						width="144"
+						height="20"
+						rx="10"
+						:opacity="1 - i / 10"
+					/>
+					<circle
+						v-for="(n, i) in 10"
+						:key="'circle' + i"
+						cx="16"
+						:cy="16 + 44 * i"
+						r="16"
+						:opacity="1 - i / 10"
+					/>
+				</svg>
+			</div>
 			<Control />
 		</div>
 		<div class="lobby">
@@ -12,8 +36,8 @@
 					style="margin-bottom: 10px"
 				/>
 				<span>NAME</span>
-				<input v-model="name" />
-				<button>Enter</button>
+				<input v-model="name" @keydown.enter="joinRoom" />
+				<button @click="joinRoom">Enter</button>
 			</div>
 		</div>
 	</div>
@@ -30,6 +54,13 @@ export default {
 		return {
 			name: ''
 		};
+	},
+	methods: {
+		joinRoom() {
+			this.$socket.emit('joinRoom', { name: this.name });
+			this.$store.commit('setName', this.name);
+			this.$router.push('./room');
+		}
 	}
 };
 </script>
@@ -56,6 +87,7 @@ export default {
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
+	margin-top: auto;
 	margin-bottom: auto;
 	input {
 		width: 250px;
@@ -98,12 +130,25 @@ export default {
 .top-wrapper {
 	width: 100%;
 	height: 48px;
-	margin-bottom: auto;
+	/* margin-bottom: auto; */
 	box-shadow: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05),
 		0 2px 0 rgba(4, 4, 5, 0.05);
+	display: flex;
+	align-items: center;
+	span {
+		margin-left: 16px;
+		color: #ffffff;
+		font-weight: bold;
+	}
+}
+
+.skeleton {
+	padding: 16px;
+	margin-bottom: auto;
 }
 
 .control-wrapper {
+	justify-content: space-between;
 	min-width: 240px;
 	height: 100%;
 	background-color: #2f3136;

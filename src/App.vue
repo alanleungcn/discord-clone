@@ -16,6 +16,24 @@ export default {
 </script>
 
 <style lang="scss">
+@font-face {
+	font-family: Whitney;
+	src: url('./assets/font/whitneymedium.otf') format('opentype');
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: Whitney;
+	src: url('./assets/font/whitneybook.otf') format('opentype');
+	font-weight: 300;
+}
+
+@font-face {
+	font-family: Whitney;
+	src: url('./assets/font/whitneysemibold.otf') format('opentype');
+	font-weight: 500;
+}
+
 html,
 body {
 	margin: 0;
@@ -23,7 +41,7 @@ body {
 	width: 100%;
 	height: 100%;
 	overflow-x: hidden;
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Whitney', sans-serif;
 }
 
 .app {

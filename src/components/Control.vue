@@ -6,10 +6,10 @@
 		</div>
 		<div class="btn-wrapper">
 			<div class="img-wrapper" @click="muteState = !muteState">
-				<img :src="mutePath" width="20" height="20" />
+				<img :src="muteImg" width="20" height="20" />
 			</div>
 			<div class="img-wrapper" @click="deafenState = !deafenState">
-				<img :src="deafenPath" width="20" height="20" />
+				<img :src="deafenImg" width="20" height="20" />
 			</div>
 			<div class="img-wrapper">
 				<img
@@ -31,28 +31,31 @@ export default {
 		};
 	},
 	computed: {
-		mutePath() {
+		muteImg() {
 			return this.muteState
 				? require('@/assets/img/muteActive.svg')
 				: require('@/assets/img/mute.svg');
 		},
-		deafenPath() {
+		deafenImg() {
 			return this.deafenState
 				? require('@/assets/img/deafenActive.svg')
 				: require('@/assets/img/deafen.svg');
 		},
 		name() {
-			return 'Enter name';
+			return this.$store.state.name || 'Enter name';
+		}
+	},
+	methods: {
+		playAudio(name) {
+			new Audio(require(`@/assets/audio/${name}.mp3`)).play();
 		}
 	},
 	watch: {
 		muteState(val) {
-			if (val) new Audio(require('@/assets/audio/mute.mp3')).play();
-			else new Audio(require('@/assets/audio/unmute.mp3')).play();
+			val ? this.playAudio('mute') : this.playAudio('unmute');
 		},
 		deafenState(val) {
-			if (val) new Audio(require('@/assets/audio/deafen.mp3')).play();
-			else new Audio(require('@/assets/audio/undeafen.mp3')).play();
+			val ? this.playAudio('deafen') : this.playAudio('undeafen');
 		}
 	}
 };
@@ -67,7 +70,7 @@ export default {
 
 .control {
 	width: 100%;
-	height: 53px;
+	min-height: 53px;
 	display: flex;
 	background-color: #292b2f;
 	justify-content: space-between;
