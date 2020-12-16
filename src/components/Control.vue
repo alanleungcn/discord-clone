@@ -28,10 +28,10 @@
 				<span>{{ name }}</span>
 			</div>
 			<div class="btn-wrapper">
-				<div class="img-wrapper" @click="muteState = !muteState">
+				<div class="img-wrapper" @click="updateMute">
 					<img :src="muteImg" width="20" height="20" />
 				</div>
-				<div class="img-wrapper" @click="deafenState = !deafenState">
+				<div class="img-wrapper" @click="updateDeafen">
 					<img :src="deafenImg" width="20" height="20" />
 				</div>
 				<div class="img-wrapper">
@@ -47,25 +47,25 @@ export default {
 	props: {
 		voice: Boolean
 	},
-	data() {
-		return {
-			muteState: false,
-			deafenState: false
-		};
-	},
 	computed: {
 		muteImg() {
-			return this.muteState
+			return this.mute
 				? require('@/assets/img/muteActive.svg')
 				: require('@/assets/img/mute.svg');
 		},
 		deafenImg() {
-			return this.deafenState
+			return this.deafen
 				? require('@/assets/img/deafenActive.svg')
 				: require('@/assets/img/deafen.svg');
 		},
 		name() {
 			return this.$store.state.name || 'Enter name';
+		},
+		mute() {
+			return this.$store.state.mute;
+		},
+		deafen() {
+			return this.$store.state.deafen;
 		}
 	},
 	methods: {
@@ -74,13 +74,19 @@ export default {
 		},
 		disconnect() {
 			this.$store.commit('setRtc', false);
+		},
+		updateMute() {
+			this.$store.commit('setMute', !this.mute);
+		},
+		updateDeafen() {
+			this.$store.commit('setDeafen', !this.deafen);
 		}
 	},
 	watch: {
-		muteState(val) {
+		mute(val) {
 			val ? this.playAudio('mute') : this.playAudio('unmute');
 		},
-		deafenState(val) {
+		deafen(val) {
 			val ? this.playAudio('deafen') : this.playAudio('undeafen');
 		}
 	}

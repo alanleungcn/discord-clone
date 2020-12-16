@@ -7,7 +7,7 @@ export default new Vuex.Store({
 	state: {
 		name: 'test',
 		mute: false,
-		deafan: false,
+		deafen: false,
 		rtcConnected: false
 	},
 	mutations: {
@@ -17,8 +17,8 @@ export default new Vuex.Store({
 		setMute(state, val) {
 			state.mute = val;
 		},
-		setDeafan(state, val) {
-			state.deafan = val;
+		setDeafen(state, val) {
+			state.deafen = val;
 		},
 		setRtc(state, val) {
 			state.rtcConnected = val;

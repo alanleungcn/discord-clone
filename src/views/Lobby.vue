@@ -57,7 +57,12 @@ export default {
 	},
 	methods: {
 		joinRoom() {
-			this.$socket.emit('joinRoom', { name: this.name });
+			/* this.$socket.emit('joinRoom', {
+				name: this.name,
+				voice: false,
+				mute: this.$store.state.mute,
+				deafen: this.$store.state.deafen
+			}); */
 			this.$store.commit('setName', this.name);
 			this.$router.push('./room');
 		}

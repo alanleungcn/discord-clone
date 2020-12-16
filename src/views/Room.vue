@@ -53,7 +53,6 @@
 					</div>
 				</div>
 			</div>
-			<video ref="video"></video>
 			<Control :voice="rtcConnected" />
 		</div>
 		<div v-if="textActive" class="content-wrapper">
@@ -61,15 +60,14 @@
 				<img src="@/assets/img/text.svg" width="24" height="24" />
 				<span>Text</span>
 			</div>
-			<video ref="video"></video>
 			<Chat />
 		</div>
-		<Video v-else :stream="stream" />
+		<Video v-else />
 	</div>
 </template>
 
 <script>
-import Peer from 'simple-peer';
+//import Peer from 'simple-peer';
 import Control from '@/components/Control.vue';
 import Chat from '@/components/Chat.vue';
 import Video from '@/components/Video.vue';
@@ -94,76 +92,90 @@ export default {
 				this.voiceActive = true;
 				return;
 			}
-			const client = {
-				name: this.$store.state.name,
+			const self = {
 				mute: this.$store.state.mute,
-				deafen: this.$store.state.mute
+				deafen: this.$store.state.deafen
 			};
-			this.$socket.emit('joinVoice', client);
-			this.voiceClients.push(client);
-			this.initPeer();
+			this.$socket.emit('joinVoice', self);
+			self.name = this.$store.state.name;
+			self.socketId = 'self';
+			this.voiceClients.push(self);
+			this.$store.commit('setRtc', true);
 			new Audio(require(`@/assets/audio/join.mp3`)).play();
 		},
 		leaveVoice() {
-			const idx = this.voiceClients.findIndex(
-				(e) => e.name === this.$store.state.name
-			);
+			const idx = this.voiceClients.findIndex((e) => e.socketId === 'self');
 			this.voiceClients.splice(idx, 1);
 			this.$socket.emit('leaveVoice');
+			this.$store.commit('setRtc', false);
 			new Audio(require(`@/assets/audio/leave.mp3`)).play();
-		},
-		initPeer() {
-			this.peer = new Peer({
-				initiator: true
-			});
-			this.peer.on('signal', (data) => {
-				this.$socket.emit('signal', data);
-				this.$store.commit('setRtc', true);
-			});
-			this.addStream({ audio: true, video: false });
-		},
-		addStream(option) {
-			navigator.mediaDevices
-				.getUserMedia(option)
-				.then((stream) => {
-					this.peer.addStream(stream);
-				})
-				.catch((err) => console.log(err));
 		}
 	},
 	sockets: {
 		addVoiceClient(client) {
 			this.voiceClients.push(client);
-			new Audio(require(`@/assets/audio/join.mp3`)).play();
+			if (this.rtcConnected)
+				new Audio(require(`@/assets/audio/join.mp3`)).play();
 		},
 		removeVoiceClient({ socketId }) {
 			const idx = this.voiceClients.findIndex((e) => e.socketId === socketId);
 			this.voiceClients.splice(idx, 1);
-			new Audio(require(`@/assets/audio/leave.mp3`)).play();
+			if (this.rtcConnected)
+				new Audio(require(`@/assets/audio/leave.mp3`)).play();
 		},
-		signalMade({ data, socketId }) {
-			if (!this.rtcConnected) return;
-			this.peer[socketId] = new Peer();
-			this.peer[socketId].signal(data);
-			this.peer[socketId].on('stream', (stream) => {
-				/* const video = this.$refs.video;
-				video.srcObject = stream;
-				video.play(); */
-				console.log(stream);
+		currentVoiceClients(clients) {
+			clients.forEach((e) => {
+				this.voiceClients.push(e);
 			});
+		},
+		updateVoiceClient(client) {
+			console.log(client);
+			const idx = this.voiceClients.findIndex(
+				(e) => e.socketId === client.socketId
+			);
+			console.log(idx);
+			this.voiceClients[idx].mute = client.mute;
+			this.voiceClients[idx].deafen = client.deafen;
+		}
+	},
+	mounted() {
+		this.$socket.emit('joinRoom', {
+			name: this.$store.state.name,
+			voice: false,
+			mute: false,
+			deafen: false
+		});
+	},
+	beforeDestroy() {
+		this.$socket.emit('leaveRoom');
+		this.$store.commit('setRtc', false);
+	},
+	watch: {
+		rtcConnected(val) {
+			if (!val) this.leaveVoice();
+		},
+		mute(val) {
+			if (!this.rtcConnected) return;
+			const idx = this.voiceClients.findIndex((e) => e.socketId === 'self');
+			this.voiceClients[idx].mute = val;
+			this.$socket.emit('updateMute', { mute: val });
+		},
+		deafen(val) {
+			if (!this.rtcConnected) return;
+			const idx = this.voiceClients.findIndex((e) => e.socketId === 'self');
+			this.voiceClients[idx].deafen = val;
+			this.$socket.emit('updateDeafen', { deafen: val });
 		}
 	},
 	computed: {
 		rtcConnected() {
 			return this.$store.state.rtcConnected;
-		}
-	},
-	mounted() {
-		this.$socket.emit('joinRoom', { name: 'test' });
-	},
-	watch: {
-		rtcConnected(val) {
-			if (!val) this.leaveVoice();
+		},
+		mute() {
+			return this.$store.state.mute;
+		},
+		deafen() {
+			return this.$store.state.deafen;
 		}
 	}
 };

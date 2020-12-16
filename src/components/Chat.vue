@@ -1,9 +1,8 @@
 <template>
 	<div class="chat">
-		<Message :msg="msg" />
-
+		<Message :msg="msgs" />
 		<div class="input-wrapper">
-			<input v-model="input" class="text-box" @keydown.enter="emitMsg" />
+			<input v-model="input" class="text-box" @keydown.enter="sendMsg" />
 		</div>
 	</div>
 </template>
@@ -18,25 +17,24 @@ export default {
 	data() {
 		return {
 			input: '',
-			msg: [{ name: 'test', time: Date.now(), msg: 'hello' }]
+			msgs: []
 		};
 	},
 	methods: {
-		emitMsg() {
-			const newMsg = {
+		sendMsg() {
+			const msg = {
 				name: this.$store.state.name,
 				msg: this.input,
 				time: Date.now()
 			};
 			this.input = '';
-			this.$socket.emit('emitMsg', newMsg);
-			this.msg.push(newMsg);
+			this.$socket.emit('sendMsg', msg);
+			this.msgs.push(msg);
 		}
 	},
 	sockets: {
-		addMsg(newMsg) {
-			this.msg.push(newMsg);
-			console.log(123);
+		getMsg(msg) {
+			this.msgs.push(msg);
 		}
 	}
 };
