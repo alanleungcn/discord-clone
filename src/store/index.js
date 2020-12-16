@@ -7,7 +7,8 @@ export default new Vuex.Store({
 	state: {
 		name: 'test',
 		mute: false,
-		deafan: false
+		deafan: false,
+		rtcConnected: false
 	},
 	mutations: {
 		setName(state, name) {
@@ -18,6 +19,9 @@ export default new Vuex.Store({
 		},
 		setDeafan(state, val) {
 			state.deafan = val;
+		},
+		setRtc(state, val) {
+			state.rtcConnected = val;
 		}
 	}
 });

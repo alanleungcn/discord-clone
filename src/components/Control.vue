@@ -1,22 +1,42 @@
 <template>
-	<div class="control">
-		<div class="info-wrapper">
-			<img src="@/assets/img/avatar.png" />
-			<span>{{ name }}</span>
+	<div class="controll-wrapper">
+		<div v-if="$store.state.rtcConnected" class="voice">
+			<div class="top">
+				<div>
+					<div class="status">
+						<img src="@/assets/img/connection.svg" width="16" height="16" />
+						<div>Voice Connected</div>
+					</div>
+					<div class="info">Voice / Room</div>
+				</div>
+				<div class="img-wrapper" @click="disconnect()">
+					<img src="@/assets/img/hang.svg" />
+				</div>
+			</div>
+			<div class="bot">
+				<div class="btn">
+					<img src="@/assets/img/camera.svg" width="20" height="20" />Video
+				</div>
+				<div class="btn">
+					<img src="@/assets/img/screen.svg" width="20" height="20" />Screen
+				</div>
+			</div>
 		</div>
-		<div class="btn-wrapper">
-			<div class="img-wrapper" @click="muteState = !muteState">
-				<img :src="muteImg" width="20" height="20" />
+		<div class="control">
+			<div class="info-wrapper">
+				<img src="@/assets/img/avatar.png" />
+				<span>{{ name }}</span>
 			</div>
-			<div class="img-wrapper" @click="deafenState = !deafenState">
-				<img :src="deafenImg" width="20" height="20" />
-			</div>
-			<div class="img-wrapper">
-				<img
-					:src="require('@/assets/img/setting.svg')"
-					width="20"
-					height="20"
-				/>
+			<div class="btn-wrapper">
+				<div class="img-wrapper" @click="muteState = !muteState">
+					<img :src="muteImg" width="20" height="20" />
+				</div>
+				<div class="img-wrapper" @click="deafenState = !deafenState">
+					<img :src="deafenImg" width="20" height="20" />
+				</div>
+				<div class="img-wrapper">
+					<img src="@/assets/img/setting.svg" width="20" height="20" />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -24,6 +44,9 @@
 
 <script>
 export default {
+	props: {
+		voice: Boolean
+	},
 	data() {
 		return {
 			muteState: false,
@@ -48,6 +71,9 @@ export default {
 	methods: {
 		playAudio(name) {
 			new Audio(require(`@/assets/audio/${name}.mp3`)).play();
+		},
+		disconnect() {
+			this.$store.commit('setRtc', false);
 		}
 	},
 	watch: {
@@ -70,10 +96,61 @@ export default {
 
 .control {
 	width: 100%;
-	min-height: 53px;
+	height: 53px;
 	display: flex;
 	background-color: #292b2f;
 	justify-content: space-between;
+}
+
+.voice {
+	box-sizing: border-box;
+	width: 100%;
+	height: 89px;
+	padding: 8px;
+	background-color: #292b2f;
+	border-bottom: 1px solid hsla(0, 0%, 100%, 0.06);
+	.top {
+		display: flex;
+		justify-content: space-between;
+		.status {
+			img {
+				margin-right: 4px;
+			}
+			display: flex;
+			color: #43b581;
+			font-weight: 500;
+			font-size: 13.5px;
+			padding-bottom: 2px;
+		}
+		.info {
+			color: #b9bbbe;
+			font-size: 12px;
+		}
+	}
+	.bot {
+		width: 100%;
+		height: 100%;
+		margin-top: 8px;
+		display: flex;
+		.btn {
+			flex: 1 1 auto;
+			@include center;
+			height: 32px;
+			color: #ffffff;
+			font-size: 14px;
+			border-radius: 3px;
+			background-color: #36393f;
+			img {
+				margin-right: 8px;
+			}
+			&:first-child {
+				margin-right: 4px;
+			}
+			&:last-child {
+				margin-left: 4px;
+			}
+		}
+	}
 }
 
 .info-wrapper {
